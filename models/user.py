@@ -59,6 +59,13 @@ def initialize_users():
                 "password_hash": hash_password("password456"),  # Replace with a secure password
                 "name": "Felix",
                 "created_at": datetime.datetime.now().isoformat()  # Store as ISO string
+            },
+            {
+                "user_id": str(uuid.uuid4()),
+                "email": "angie@werock.com",
+                "password_hash": hash_password("password456"),  # Replace with a secure password
+                "name": "Angie",
+                "created_at": datetime.datetime.now().isoformat()  # Store as ISO string
             }
         ]
         
