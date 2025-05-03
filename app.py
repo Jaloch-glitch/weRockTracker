@@ -72,10 +72,7 @@ if not st.session_state.authenticated:
     # Display allowed users for demo purposes 
     st.info("Log in with your weRock Services account")
     st.caption("""
-    Demo Accounts:
-    - Brian: brianGuru@werock.com / password123
-    - Felix: felix@werock.com / password456 
-    - Angie: angie@werock.com / password789
+    Have Fun Make Money!!
     """)
 
 # Main Application (only shown if authenticated)
