@@ -1,13 +1,39 @@
 from pymongo import MongoClient
+from urllib.parse import quote_plus
 import datetime
+import os
+import subprocess
+
+KEYCHAIN_SERVICE = "werocktracker-mongodb"
+
+
+def _get_mongo_password(username):
+    """
+    Read the MongoDB password from the MONGODB_PASSWORD env var,
+    falling back to the macOS Keychain (service: werocktracker-mongodb).
+    """
+    password = os.environ.get("MONGODB_PASSWORD")
+    if password:
+        return password
+    try:
+        return subprocess.run(
+            ["security", "find-generic-password", "-a", username, "-s", KEYCHAIN_SERVICE, "-w"],
+            capture_output=True, text=True, check=True,
+        ).stdout.strip()
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        raise RuntimeError(
+            "MongoDB password not found. Set MONGODB_PASSWORD or add it to the macOS Keychain: "
+            f"security add-generic-password -a {username} -s {KEYCHAIN_SERVICE} -w"
+        )
+
 
 # MongoDB connection setup
 def get_database_connection():
     """
     Establishes a connection to MongoDB and returns the database object
     """
-    USERNAME = "felixjdawn"
-    PASSWORD = "MMPvV2w5IJXyY9we"
+    USERNAME = os.environ.get("MONGODB_USERNAME", "felixjdawn")
+    PASSWORD = quote_plus(_get_mongo_password(USERNAME))
     connection_string = f"mongodb+srv://{USERNAME}:{PASSWORD}@gikoshcluster.r6qxd.mongodb.net/?retryWrites=true&w=majority&appName=gikoshCluster"
     
     client = MongoClient(connection_string)
